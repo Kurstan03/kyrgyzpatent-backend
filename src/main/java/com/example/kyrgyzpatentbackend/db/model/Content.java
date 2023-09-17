@@ -11,7 +11,7 @@ import static jakarta.persistence.CascadeType.*;
 @Getter
 @Setter
 @Entity
-@Table(name = "content")
+@Table(name = "contents")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Content {
@@ -20,7 +20,6 @@ public class Content {
     @SequenceGenerator(name = "content_gen", sequenceName = "content_seq", allocationSize = 1, initialValue = 37)
     private Long id;
     private String title;
-    private String description;
     private String contentNumber;
     private String linkPdf;
     @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
