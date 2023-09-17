@@ -31,4 +31,10 @@ public class CategoryController {
     public List<ContentResponse> getContentsOfCategory(@PathVariable Long categoryId) {
         return categoryService.getById(categoryId);
     }
+
+    @Operation(summary = "Search contents", description = "Global search contents with his title, category, content number")
+    @GetMapping("/search")
+    public List<ContentResponse> searchContents(@RequestParam String search) {
+        return categoryService.searchContents(search);
+    }
 }

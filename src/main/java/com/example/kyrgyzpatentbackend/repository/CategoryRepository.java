@@ -20,4 +20,12 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             FROM Content c WHERE c.category.id = :categoryId
             """)
     List<ContentResponse> getContents(Long categoryId);
+
+    @Query("""
+            SELECT NEW com.example.kyrgyzpatentbackend.db.dto.response.ContentResponse(
+            c.id, c.title, c.contentNumber, c.linkPdf
+            )
+            FROM Content c WHERE c.category.name ILIKE :search% OR c.title ILIKE :search% OR c.contentNumber ILIKE :search%
+            """)
+    List<ContentResponse> searchContents(String search);
 }
