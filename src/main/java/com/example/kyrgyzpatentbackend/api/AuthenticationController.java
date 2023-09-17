@@ -2,6 +2,7 @@ package com.example.kyrgyzpatentbackend.api;
 
 
 import com.example.kyrgyzpatentbackend.db.dto.request.AuthenticateRequest;
+import com.example.kyrgyzpatentbackend.db.dto.request.RegisterRequest;
 import com.example.kyrgyzpatentbackend.db.dto.response.AuthenticationResponse;
 import com.example.kyrgyzpatentbackend.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,4 +27,9 @@ public class AuthenticationController {
         return authenticationService.authenticate(request);
     }
 
+    @Operation(summary = "Register a new user", description = "This method validates the request and register a new user.")
+    @PostMapping("/sign-up")
+    public AuthenticationResponse signUp(@RequestBody @Valid RegisterRequest request) {
+        return authenticationService.register(request);
+    }
 }

@@ -2,10 +2,13 @@ package com.example.kyrgyzpatentbackend.service.impl;
 
 import com.example.kyrgyzpatentbackend.config.jwt.JwtService;
 import com.example.kyrgyzpatentbackend.db.dto.request.AuthenticateRequest;
+import com.example.kyrgyzpatentbackend.db.dto.request.RegisterRequest;
 import com.example.kyrgyzpatentbackend.db.dto.response.AuthenticationResponse;
+import com.example.kyrgyzpatentbackend.db.exceptions.AlreadyExistException;
 import com.example.kyrgyzpatentbackend.db.exceptions.BadRequestException;
 import com.example.kyrgyzpatentbackend.db.exceptions.NotFoundException;
 import com.example.kyrgyzpatentbackend.db.model.User;
+import com.example.kyrgyzpatentbackend.db.model.enums.Role;
 import com.example.kyrgyzpatentbackend.repository.UserRepository;
 import com.example.kyrgyzpatentbackend.service.AuthenticationService;
 import jakarta.transaction.Transactional;
@@ -55,4 +58,30 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
+    @Override
+    public AuthenticationResponse register(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.email())) {
+            log.error(String.format("Пользователь с адресом электронной почты %s уже существует", request.email()));
+            throw new AlreadyExistException(String.format("Пользователь с адресом электронной почты %s уже существует", request.email()));
+        }
+
+        User user = User.builder()
+                .fullName(request.fullName())
+                .phoneNumber(request.phoneNumber())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .role(Role.USER)
+                .isActive(true)
+                .build();
+
+        userRepository.save(user);
+        log.info(String.format("Пользователь %s успешно сохранен!", user.getEmail()));
+
+        String token = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .email(user.getEmail())
+                .role(user.getRole())
+                .token(token)
+                .build();
+    }
 }
